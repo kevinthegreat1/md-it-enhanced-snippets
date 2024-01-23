@@ -139,6 +139,8 @@ module.exports = function (md, options) {
       }
     });
 
+    throw new Error("e");
+
     // Remove leading whitespace from each line at the start, only if the line has leading whitespace of the same length or more.
     _contentLines.forEach((line, idx) => {
       const leadingWhitespace = line.match(/^(\s*)/)[0];
