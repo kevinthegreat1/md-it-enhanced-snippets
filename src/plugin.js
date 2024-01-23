@@ -131,7 +131,7 @@ module.exports = function (md, options) {
     const _contentLines = _content.split("\n");
     let leadingWhitespaceLength = 99999;
 
-    // Find the longest starting whitespace length.
+    // Find the shortest leading width of whitespace at the start of a line.
     _contentLines.forEach((line) => {
       const leadingWhitespace = line.match(/^(\s*)/)[0];
       if (leadingWhitespace.length < leadingWhitespaceLength) {
