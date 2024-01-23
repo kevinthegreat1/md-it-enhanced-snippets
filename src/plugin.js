@@ -124,8 +124,8 @@ module.exports = function (md, options) {
       return "No lines matched.";
     }
 
-    let leadingWhitespaceLength = str.match(/^(\s*)/)[0].length;
     const _contentLines = _content.split("\n");
+    let leadingWhitespaceLength = _contentLines[0].match(/^(\s*)/)[0].length;
 
     // Remove leading whitespace from each line at the start, only if the line has leading whitespace of the same length or more.
     _contentLines.forEach((line, idx) => {
