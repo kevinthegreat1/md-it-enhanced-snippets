@@ -124,6 +124,10 @@ module.exports = function (md, options) {
       return "No lines matched.";
     }
 
+    if (options.dontTrim) {
+      return _content;
+    }
+
     const _contentLines = _content.split("\n");
     let leadingWhitespaceLength = _contentLines[0].match(/^(\s*)/)[0].length;
 
