@@ -129,7 +129,15 @@ module.exports = function (md, options) {
     }
 
     const _contentLines = _content.split("\n");
-    let leadingWhitespaceLength = _contentLines[0].match(/^(\s*)/)[0].length;
+    let leadingWhitespaceLength = 99999;
+
+    // Find the shortest starting whitespace length.
+    _contentLines.forEach((line) => {
+      const leadingWhitespace = line.match(/^(\s*)/)[0];
+      if (leadingWhitespace.length < leadingWhitespaceLength) {
+        leadingWhitespaceLength = leadingWhitespace.length;
+      }
+    });
 
     // Remove leading whitespace from each line at the start, only if the line has leading whitespace of the same length or more.
     _contentLines.forEach((line, idx) => {
