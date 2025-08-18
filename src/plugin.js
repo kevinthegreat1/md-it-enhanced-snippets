@@ -1,18 +1,18 @@
-const fs = require("fs");
+import {existsSync, readFileSync} from "fs";
 
 const TRANSCLUDE_WITH = "TRANSCLUDE_WITH";
 const TRANSCLUDE_LINE = "TRANSCLUDE_LINE";
 const TRANSCLUDE_TAG = "TRANSCLUDE_TAG";
 
-module.exports = function (md, options) {
+export default function (md, options) {
   const _root = options && options.root ? options.root : process.cwd();
 
   const fileExists = (f) => {
-    return fs.existsSync(f);
+    return existsSync(f);
   };
 
-  const readFileSync = (f) => {
-    return fileExists(f) ? fs.readFileSync(f, "utf8") : `Not Found: ${f}`;
+  const _readFileSync = (f) => {
+    return fileExists(f) ? readFileSync(f, "utf8") : `Not Found: ${f}`;
   };
 
   const parseOptions = (opts) => {
@@ -199,7 +199,7 @@ module.exports = function (md, options) {
     const t = tokens[idx];
     if (t && t.meta && t.meta.md_it_enhanced_snippets) {
       const {d, opts} = t.meta.md_it_enhanced_snippets;
-      const content = readFileSync(d.file.resolve);
+      const content = _readFileSync(d.file.resolve);
       t.content =
         d.fileExists && opts.hasTransclusion
           ? contentTransclusion(content, d.options, opts.transclusionType)

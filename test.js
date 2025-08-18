@@ -1,15 +1,15 @@
-const fs = require('fs')
+import {readFile, writeFile} from 'fs';
 
-const codeSnippet = require('./src/plugin')
-const MarkdownIt = require('markdown-it')
+import codeSnippet from './index.js';
+import MarkdownIt from 'markdown-it';
 
 const md = new MarkdownIt()
     .use(codeSnippet)
 
-fs.readFile('./test.md', 'utf8', (err, data) => {
+readFile('./test.md', 'utf8', (err, data) => {
     if (err) throw err;
     const result = md.render(data);
-    fs.writeFile('./test.html', result, (err) => {
+    writeFile('./test.html', result, (err) => {
         if (err) throw err;
     });
 })

@@ -1,3 +1,3 @@
-const codeSnippet = require('./src/plugin')
+import codeSnippet from './src/plugin.js'
 
-module.exports = codeSnippet
+export default codeSnippet
