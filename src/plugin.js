@@ -12,7 +12,7 @@ module.exports = function (md, options) {
   };
 
   const readFileSync = (f) => {
-    return fileExists(f) ? fs.readFileSync(f).toString() : `Not Found: ${f}`;
+    return fileExists(f) ? fs.readFileSync(f, "utf8") : `Not Found: ${f}`;
   };
 
   const parseOptions = (opts) => {
@@ -46,7 +46,6 @@ module.exports = function (md, options) {
         ext: fileParts[fileParts.length - 1],
       },
       options: parseOptions(opts),
-      content: readFileSync(fullpath),
       fileExists: fileExists(fullpath),
     };
   };
@@ -68,7 +67,7 @@ module.exports = function (md, options) {
     },
   });
 
-  const contentTransclusion = ({ content, options }, transcludeType) => {
+  const contentTransclusion = (content, options, transcludeType) => {
     const lines = content.split("\n");
     let _content = "";
 
@@ -176,11 +175,11 @@ module.exports = function (md, options) {
     const opts = optionsMap(d);
 
     const token = state.push("fence", "code", 0);
+    // The `info` string contains the language (or file extension) and highlight lines (e.g. "1-2" or an empty string) for the highlighter to use.
     token.info = (d.options.lang || d.file.ext) + opts.meta;
-    token.content =
-      d.fileExists && opts.hasTransclusion
-        ? contentTransclusion(d, opts.transclusionType)
-        : d.content;
+    // Only store metadata in the token, don't load the file yet.
+    // Otherwise, the token contains the entire file, taking up memory.
+    token.meta = {md_it_enhanced_snippets: {d, opts}}; // Custom object using our plugin name to minimize the chance of conflicts.
     token.markup = "```";
     token.map = [startLine, startLine + 1];
 
@@ -189,4 +188,23 @@ module.exports = function (md, options) {
   }
 
   md.block.ruler.before("fence", "snippet", parser);
+
+  // We wrap the fence renderer rule to load transclusion contents during render.
+  const originalFence = md.renderer.rules.fence;
+  // Throw an error if the fence render rule is gone.
+  if (!originalFence) {
+    throw new Error("md.renderer.rules.fence is not defined. md_it_enhanced_snippets needs the fence render rule!");
+  }
+  md.renderer.rules.fence = function (tokens, idx, options, env, self) {
+    const t = tokens[idx];
+    if (t && t.meta && t.meta.md_it_enhanced_snippets) {
+      const {d, opts} = t.meta.md_it_enhanced_snippets;
+      const content = readFileSync(d.file.resolve);
+      t.content =
+        d.fileExists && opts.hasTransclusion
+          ? contentTransclusion(content, d.options, opts.transclusionType)
+          : content;
+    }
+    return originalFence(tokens, idx, options, env, self);
+  };
 };
