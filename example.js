@@ -1,4 +1,4 @@
-module.exports = function autolink(state, silent) {
+export default function autolink(state, silent) {
     var tail, linkMatch, emailMatch, url, fullUrl, token,
         pos = state.pos;
 

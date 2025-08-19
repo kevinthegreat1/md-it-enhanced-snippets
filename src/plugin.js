@@ -1,3 +1,4 @@
+import {cwd} from 'node:process';
 import {existsSync, readFileSync} from "fs";
 
 const TRANSCLUDE_WITH = "TRANSCLUDE_WITH";
@@ -5,7 +6,7 @@ const TRANSCLUDE_LINE = "TRANSCLUDE_LINE";
 const TRANSCLUDE_TAG = "TRANSCLUDE_TAG";
 
 export default function (md, options) {
-  const _root = options && options.root ? options.root : process.cwd();
+  const _root = options && options.root ? options.root : cwd();
 
   const fileExists = (f) => {
     return existsSync(f);
