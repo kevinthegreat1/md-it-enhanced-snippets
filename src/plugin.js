@@ -156,7 +156,7 @@ export default function (md, options) {
   };
 
   function parser(state, startLine, endLine, silent) {
-    const matcher = [64, 91, 99, 111, 100, 101];
+    const matcher = [64, 91, 99, 111, 100, 101]; // @[code
     const pos = state.bMarks[startLine] + state.tShift[startLine];
     const max = state.eMarks[startLine];
 
@@ -191,9 +191,9 @@ export default function (md, options) {
   md.block.ruler.before("fence", "snippet", parser);
 
   // We wrap the fence renderer rule to load transclusion contents during render.
-  const originalFence = md.renderer.rules.fence;
+  const fence = md.renderer.rules.fence;
   // Throw an error if the fence render rule is gone.
-  if (!originalFence) {
+  if (!fence) {
     throw new Error("md.renderer.rules.fence is not defined. md_it_enhanced_snippets needs the fence render rule!");
   }
   md.renderer.rules.fence = function (tokens, idx, options, env, self) {
@@ -205,7 +205,11 @@ export default function (md, options) {
         d.fileExists && opts.hasTransclusion
           ? contentTransclusion(content, d.options, opts.transclusionType)
           : content;
+
+      const htmlContent = fence(tokens, idx, options, env, self);
+      t.content = '';
+      return htmlContent;
     }
-    return originalFence(tokens, idx, options, env, self);
+    return fence(tokens, idx, options, env, self);
   };
 };
